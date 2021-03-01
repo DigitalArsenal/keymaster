@@ -18,6 +18,14 @@ This library enables the user to do PKI tasks, such as creating / signing certif
 npm i @digitalarsenal.io/keymaster
 ```
 
+## Contributing
+
+Please [open an issue](https://github.com/DigitalArsenal/keymaster/issues) before submitting a pull request.
+
+## License
+
+[cc-by-4.0](https://creativecommons.org/licenses/by/4.0/)
+
 ## Other Libraries
 
 [js-x25519](https://github.com/CryptoEsel/js-x25519)
