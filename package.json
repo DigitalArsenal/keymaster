@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "postinstall": "npm run build:openssl:wasm",
-    "test": "mocha -s 300 --require test/hooks.js",
-    "test:dev": "mocha -s 300 -w --parallel --require test/hooks.js ./test ./src",
+    "test": "mocha -s 300 --require test/utilities/hooks.js",
+    "test:dev": "mocha -s 300 -w --parallel --require test/utilities/hooks.js ./test ./src",
     "dist:dir": "mkdir -p dist",
     "dev": "./node_modules/.bin/nodemon --exec 'npm run build && npm run test' -w ./src/c/main.c -w ./src/c/certgen.c -w ./src/c/utilities.c -w ./src/js/index.mjs",
     "dev:c": "./node_modules/.bin/nodemon --exec \"npm run dist:dir && npm run build:c\" -w ./test/test.c",
