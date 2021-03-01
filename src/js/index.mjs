@@ -329,8 +329,8 @@ class keymaster {
    * @param {number} [settings.notBefore=0] - Certificate validity start in seconds from current system time
    * @param {number} [settings.notAfter=31536000] - Certificate validity stop in seconds from current system time
    * @param {number} [settings.version=2] - Certificate version (actual version is 1 less than number)
-   * @param {string} [settings.issuer="C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER"] - Certificate issuer csv Distinguished Name (DN) string
-   * @param {string} [settings.name="C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME"] - Certificate name csv Distinguished Name (DN) string
+   * @param {string} [settings.issuer=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER] - Certificate issuer csv Distinguished Name (DN) string
+   * @param {string} [settings.name=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME] - Certificate name csv Distinguished Name (DN) string
    * @param {number} [settings.id=0] - Certificate ID number
    * @param {Object} settings.basicConstraints - Basic constraints on this certificate
    * @param {Boolean} settings.basicConstraints.CA - The subject of the cert is a CA
@@ -338,8 +338,8 @@ class keymaster {
    * @param {Object|string} [settings.keyUsage=this.keyUsage] - Key usage extensions.
    * @param {Object|string} [settings.extKeyUsage=this.extKeyUsage] - Extended Key usage extensions.
    * @param {Object} [settings.subjectAlternativeName] - Object with properties enumerating SAN (additional host names) for certificate
-   * @param {string} [settings.subjectKeyIdentifier="hash"] - Either hash per {@link https://tools.ietf.org/html/rfc3280#section-4.2.1.2} or a hex string (strongly discouraged).
-   * @param {string} [settings.authorityKeyIdentifier="keyid:always"] - {@link https://www.openssl.org/docs/man1.0.2/man5/x509v3_config.html} Can be either 'keyid', 'issuer', or both, each with optional value 'always'
+   * @param {string} [settings.subjectKeyIdentifier=hash"] - Either hash per {@link https://tools.ietf.org/html/rfc3280#section-4.2.1.2} or a hex string (strongly discouraged).
+   * @param {string} [settings.authorityKeyIdentifier=keyid:always] - {@link https://www.openssl.org/docs/man1.0.2/man5/x509v3_config.html} Can be either 'keyid', 'issuer', or both, each with optional value 'always'
    * @param {string} [settings.friendlyName=null] - Friendly Name for Microsoft .p12
    * @param {string} [settings.certificateSigningRequest=null] - CSR as a string
    * @param {number} [settings.outformat=NID_x509Certificate] - NID for the output format
@@ -426,13 +426,13 @@ class keymaster {
    * @param {number} [settings.compressed=POINT_CONVERSION_UNCOMPRESSED] - Which X9.62 (ECDSA) form, for encoding an EC point
    * @param {string} [settings.password=null] - Password to use
    * @param {number} [settings.version=2] - Certificate version (actual version is 1 less than number)
-   * @param {string} [settings.name="C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME"] - Certificate name csv Distinguished Name (DN) string
+   * @param {string} [settings.name=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME] - Certificate name csv Distinguished Name (DN) string
    * @param {number} [settings.id=0] - Certificate ID number
    * @param {Object} settings.basicConstraints - Basic constraints on this certificate
    * @param {Object|string} [settings.keyUsage=this.keyUsage] - Key usage extensions.
    * @param {Object|string} [settings.extKeyUsage=this.extKeyUsage] - Extended Key usage extensions.
    * @param {Object} [settings.subjectAlternativeName] - Object with properties enumerating SAN (additional host names) for certificate
-   * @param {string} [settings.subjectKeyIdentifier="hash"] - Either hash per {@link https://tools.ietf.org/html/rfc3280#section-4.2.1.2} or a hex string (strongly discouraged).
+   * @param {string} [settings.subjectKeyIdentifier=hash] - Either hash per {@link https://tools.ietf.org/html/rfc3280#section-4.2.1.2} or a hex string (strongly discouraged).
    * @return {string} String representation of certificate
    */
   createCertificateSigningRequest({
@@ -497,8 +497,8 @@ class keymaster {
    * @function validPrivateKey
    * @static
    * @param {buffer|arrayBuffer|string|string[]|Object} privateKey - Private Key to compare
-   * @param {string} [min="0"] - Minimum value as a hex string
-   * @param {string} [max="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140"] - Maximum value as a hex string
+   * @param {string} [min=0] - Minimum value as a hex string
+   * @param {string} [max=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140] - Maximum value as a hex string
    * @return {Boolean}
    */
   static validPrivateKey(privateKey, min = "0", max = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140") {

@@ -237,8 +237,8 @@ Create a certificate
 | [settings.notBefore] | <code>number</code> | <code>0</code> | Certificate validity start in seconds from current system time |
 | [settings.notAfter] | <code>number</code> | <code>31536000</code> | Certificate validity stop in seconds from current system time |
 | [settings.version] | <code>number</code> | <code>2</code> | Certificate version (actual version is 1 less than number) |
-| [settings.issuer] | <code>string</code> | <code>&quot;\&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;ISSUER\&quot;&quot;</code> | Certificate issuer csv Distinguished Name (DN) string |
-| [settings.name] | <code>string</code> | <code>&quot;\&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;NAME\&quot;&quot;</code> | Certificate name csv Distinguished Name (DN) string |
+| [settings.issuer] | <code>string</code> | <code>&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;ISSUER&quot;</code> | Certificate issuer csv Distinguished Name (DN) string |
+| [settings.name] | <code>string</code> | <code>&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;NAME&quot;</code> | Certificate name csv Distinguished Name (DN) string |
 | [settings.id] | <code>number</code> | <code>0</code> | Certificate ID number |
 | settings.basicConstraints | <code>Object</code> |  | Basic constraints on this certificate |
 | settings.basicConstraints.CA | <code>Boolean</code> |  | The subject of the cert is a CA |
@@ -246,8 +246,8 @@ Create a certificate
 | [settings.keyUsage] | <code>Object</code> \| <code>string</code> | <code>this.keyUsage</code> | Key usage extensions. |
 | [settings.extKeyUsage] | <code>Object</code> \| <code>string</code> | <code>this.extKeyUsage</code> | Extended Key usage extensions. |
 | [settings.subjectAlternativeName] | <code>Object</code> |  | Object with properties enumerating SAN (additional host names) for certificate |
-| [settings.subjectKeyIdentifier] | <code>string</code> | <code>&quot;\&quot;hash\&quot;&quot;</code> | Either hash per [https://tools.ietf.org/html/rfc3280#section-4.2.1.2](https://tools.ietf.org/html/rfc3280#section-4.2.1.2) or a hex string (strongly discouraged). |
-| [settings.authorityKeyIdentifier] | <code>string</code> | <code>&quot;\&quot;keyid:always\&quot;&quot;</code> | [https://www.openssl.org/docs/man1.0.2/man5/x509v3_config.html](https://www.openssl.org/docs/man1.0.2/man5/x509v3_config.html) Can be either 'keyid', 'issuer', or both, each with optional value 'always' |
+| [settings.subjectKeyIdentifier] | <code>string</code> | <code>&quot;hash\&quot;&quot;</code> | Either hash per [https://tools.ietf.org/html/rfc3280#section-4.2.1.2](https://tools.ietf.org/html/rfc3280#section-4.2.1.2) or a hex string (strongly discouraged). |
+| [settings.authorityKeyIdentifier] | <code>string</code> | <code>&quot;keyid:always&quot;</code> | [https://www.openssl.org/docs/man1.0.2/man5/x509v3_config.html](https://www.openssl.org/docs/man1.0.2/man5/x509v3_config.html) Can be either 'keyid', 'issuer', or both, each with optional value 'always' |
 | [settings.friendlyName] | <code>string</code> | <code>null</code> | Friendly Name for Microsoft .p12 |
 | [settings.certificateSigningRequest] | <code>string</code> | <code>null</code> | CSR as a string |
 | [settings.outformat] | <code>number</code> | <code>NID_x509Certificate</code> | NID for the output format |
@@ -270,13 +270,13 @@ Create a certificate signing request
 | [settings.compressed] | <code>number</code> | <code>POINT_CONVERSION_UNCOMPRESSED</code> | Which X9.62 (ECDSA) form, for encoding an EC point |
 | [settings.password] | <code>string</code> | <code>null</code> | Password to use |
 | [settings.version] | <code>number</code> | <code>2</code> | Certificate version (actual version is 1 less than number) |
-| [settings.name] | <code>string</code> | <code>&quot;\&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;NAME\&quot;&quot;</code> | Certificate name csv Distinguished Name (DN) string |
+| [settings.name] | <code>string</code> | <code>&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;NAME&quot;</code> | Certificate name csv Distinguished Name (DN) string |
 | [settings.id] | <code>number</code> | <code>0</code> | Certificate ID number |
 | settings.basicConstraints | <code>Object</code> |  | Basic constraints on this certificate |
 | [settings.keyUsage] | <code>Object</code> \| <code>string</code> | <code>this.keyUsage</code> | Key usage extensions. |
 | [settings.extKeyUsage] | <code>Object</code> \| <code>string</code> | <code>this.extKeyUsage</code> | Extended Key usage extensions. |
 | [settings.subjectAlternativeName] | <code>Object</code> |  | Object with properties enumerating SAN (additional host names) for certificate |
-| [settings.subjectKeyIdentifier] | <code>string</code> | <code>&quot;\&quot;hash\&quot;&quot;</code> | Either hash per [https://tools.ietf.org/html/rfc3280#section-4.2.1.2](https://tools.ietf.org/html/rfc3280#section-4.2.1.2) or a hex string (strongly discouraged). |
+| [settings.subjectKeyIdentifier] | <code>string</code> | <code>&quot;hash&quot;</code> | Either hash per [https://tools.ietf.org/html/rfc3280#section-4.2.1.2](https://tools.ietf.org/html/rfc3280#section-4.2.1.2) or a hex string (strongly discouraged). |
 
 <a name="validPrivateKey"></a>
 
@@ -288,6 +288,6 @@ Range Check Private Key
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | privateKey | <code>buffer</code> \| <code>arrayBuffer</code> \| <code>string</code> \| <code>Array.&lt;string&gt;</code> \| <code>Object</code> |  | Private Key to compare |
-| [min] | <code>string</code> | <code>&quot;\&quot;0\&quot;&quot;</code> | Minimum value as a hex string |
-| [max] | <code>string</code> | <code>&quot;\&quot;FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140\&quot;&quot;</code> | Maximum value as a hex string |
+| [min] | <code>string</code> | <code>0</code> | Minimum value as a hex string |
+| [max] | <code>string</code> | <code>&quot;FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364140&quot;</code> | Maximum value as a hex string |
 
