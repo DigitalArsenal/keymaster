@@ -1,14 +1,20 @@
-# keymaster
+# KEYMASTER
 
-keymaster is a library that enables using crypto currency keys in public key infrastructure roles.
+Keymaster is a library for using cryptocurrency keys in public key infrastructure roles.
 
-## Design principles
+## Background
 
-- No internal structures, all values passed are buffers / strings interpretable by OpenSSL (hex, PEM, etc.)
-- Each instance of class keymaster is associated with a single private key
-- Certificates default to self-signed
-  - [Issuer Name Field includes SLIP-0044 index / symbol](https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
-  - Can sign, set up chain if needed
+Established Public Key Infrastructure (PKI) architectures with centralized Certificate Authorities (CA) in general do not interoperate well with newer decentralized PKI software like [Bitcoin](https://bitcoin.org/en/).
+
+Specifically, legacy PKI certificate formats like [x.509 v3](https://tools.ietf.org/html/rfc5280) are not easily interoperable with newer key management formats such as [Wallet Import Format (WIF)](https://en.bitcoin.it/wiki/Wallet_import_format) and [seed phrases](https://en.bitcoin.it/wiki/Seed_phrase#:~:text=A%20seed%20phrase%2C%20seed%20recovery,write%20it%20down%20on%20paper.).
+
+This library enables the user to do PKI tasks, such as creating / signing certificates, using private keys that can also be used in newer decentralized software.
+
+## Installation
+
+```
+npm i @digitalarsenal.io/keymaster
+```
 
 ## Other Libraries
 
@@ -24,21 +30,7 @@ keymaster is a library that enables using crypto currency keys in public key inf
 
 [node-forge](https://github.com/digitalbazaar/forge)
 
-## Issues
+## Prior Issues
 
 - [ ] [Node-Forge](https://github.com/digitalbazaar/forge/issues/532)
 - [ ] [PKI.js](https://github.com/PeculiarVentures/PKI.js/pull/230)
-
-## TODO
-
-- [x] [Create certificate store](https://www.openssl.org/docs/man1.1.1/man3/X509_STORE_CTX_free.html)
-- [x] Create X509 certificate
-- [x] Pass in CSR and private key, CA cert and private key
-  - [x] Create X509 certificate
-  - [x] Copy CSR public key
-  - [x] Sign with CA private key
-  - [x] Copy over CSR attributes
-  - [x] Embed CA cert
-  - [x] Embed private key associated with CSR
-- [ ] Support [more formats](https://www.openssl.org/docs/man1.1.1/man3/PEM_write_bio_PUBKEY.html) in PEM than just embedded base64
-- [ ] Consider making the SKI the wallet address
