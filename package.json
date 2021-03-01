@@ -1,0 +1,63 @@
+{
+  "name": "keymaster",
+  "version": "1.1.1j",
+  "description": "Crypto Certificate Library",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "postinstall": "npm run build:openssl:wasm",
+    "test": "mocha -s 300 --require test/hooks.js",
+    "test:dev": "mocha -s 300 -w --parallel --require test/hooks.js ./test ./src",
+    "dist:dir": "mkdir -p dist",
+    "dev": "./node_modules/.bin/nodemon --exec 'npm run build && npm run test' -w ./src/c/main.c -w ./src/c/certgen.c -w ./src/c/utilities.c -w ./src/js/index.mjs",
+    "dev:c": "./node_modules/.bin/nodemon --exec \"npm run dist:dir && npm run build:c\" -w ./test/test.c",
+    "build": "npm run build:js && npm run generate:ts-def && npm run test",
+    "build:openssl:wasm": "cd packages && ./build.sh",
+    "build:openssl:c": "cd packages/openssl && ./config && make clean && make && cp libcrypto.a ../../lib/",
+    "build:c": "clang -Llib/ test/test.c -ldl -pthread -lcrypto -D CRYPTO_TDEBUG=1 -Ipackages/openssl/include -Ipackages/openssl/include/openssl -o dist/km && npm run c:run",
+    "build:wasm": "emcc -O3 src/c/main.c src/c/certgen.c src/c/utilities.c -g -static -Wl,--initial-memory=655360,--export=processCSR,--export=createCertificate,--export=createCertificateSigningRequest,--export=cleanup,--export=createBuffer,--export=destroyBuffer,--export=convertKey -Llib/wasm -lcrypto --target=wasm32-unknown-wasi -D CRYPTO_TDEBUG=1 -s SINGLE_FILE -s EXPORT_ES6=1 --sysroot=/opt/wasi-sysroot -I/opt/wasi-sysroot/include -Ipackages/openssl/include -Ipackages/openssl/include/openssl -Isrc/c/include -I/usr/include/netinet -I/usr/include/x86_x64-linux-gnu/bits -o dist/keymaster.wasm.js",
+    "build:rollup": "rollup -c ./scripts/rollup.config.js",
+    "build:js": "npm run build:wasm && npm run generate:define && npm run build:rollup",
+    "generate:paramfile": "openssl ecparam -name secp256k1",
+    "generate:define": "node ./scripts/generateDefines.js",
+    "generate:ts-def": "cp ./src/js/index.mjs index.js && tsc index.js --declaration --allowJs --emitDeclarationOnly --outDir ./dist && rm index.js",
+    "c:run": "./dist/km ./test/data/ca.key ./test/data/ca.pem"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DigitalArsenal/keymaster.git"
+  },
+  "keywords": [
+    "openssl",
+    "ca",
+    "certificates",
+    "x509",
+    "pki",
+    "bitcoin",
+    "secp256k1",
+    "x25519",
+    "ed25519"
+  ],
+  "author": "digitalarsenal.io",
+  "license": "cc-by-4.0",
+  "bugs": {
+    "url": "https://github.com/DigitalArsenal/keymaster/issues"
+  },
+  "homepage": "https://github.com/DigitalArsenal/keymaster#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-wasm": "^5.1.2",
+    "bitcoinjs-lib": "5.2.0",
+    "bs58": "^4.0.1",
+    "eccrypto-js": "^5.4.0",
+    "express": "^4.17.1",
+    "globby": "^11.0.1",
+    "mocha": "^8.3.0",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.4",
+    "ripemd160": "^2.0.2",
+    "rollup": "^2.39.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.1.5"
+  }
+}
