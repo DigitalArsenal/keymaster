@@ -39,8 +39,3 @@ Please [open an issue](https://github.com/DigitalArsenal/keymaster/issues) befor
 [blue-crypt](https://git.rootprojects.org/root/acme.js)
 
 [node-forge](https://github.com/digitalbazaar/forge)
-
-## Prior Issues
-
-- [ ] [Node-Forge](https://github.com/digitalbazaar/forge/issues/532)
-- [ ] [PKI.js](https://github.com/PeculiarVentures/PKI.js/pull/230)
