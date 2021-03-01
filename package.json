@@ -1,8 +1,8 @@
 {
-  "name": "keymaster",
+  "name": "@digitalarsenal.io/keymaster",
   "version": "1.1.1j",
   "description": "Crypto Certificate Library",
-  "main": "index.js",
+  "main": "dist/index.mjs",
   "type": "module",
   "scripts": {
     "postinstall": "npm run build:openssl:wasm",
