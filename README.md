@@ -10,9 +10,7 @@ Specifically, legacy PKI certificate formats like [x.509 v3](https://tools.ietf.
 
 This library enables the user to do PKI tasks, such as creating / signing certificates, using private keys that can also be used in newer decentralized software.
 
-## Usage
-
-
+## Usage: [API Docs](./dist/doc.md)
 
 ## Installation
 
