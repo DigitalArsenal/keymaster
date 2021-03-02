@@ -1,6 +1,6 @@
 {
   "name": "@digitalarsenal.io/keymaster",
-  "version": "1.1.1j.0.1",
+  "version": "1.1.1j.0.2",
   "description": "Crypto Certificate Library",
   "main": "dist/index.mjs",
   "type": "module",
