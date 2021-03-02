@@ -2,6 +2,8 @@
 
 Keymaster is a library for using cryptocurrency keys in public key infrastructure roles.
 
+## NOTE: This library has not been tested for production use.
+
 ## Background
 
 Established Public Key Infrastructure (PKI) architectures with centralized Certificate Authorities (CA) in general do not interoperate well with newer decentralized PKI software like [Bitcoin](https://bitcoin.org/en/).
@@ -27,6 +29,8 @@ Please [open an issue](https://github.com/DigitalArsenal/keymaster/issues) befor
 [cc-by-4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## Other Libraries
+
+[x509.js](https://github.com/PeculiarVentures/x509) <b>Recommended</b>
 
 [js-x25519](https://github.com/CryptoEsel/js-x25519)
 
