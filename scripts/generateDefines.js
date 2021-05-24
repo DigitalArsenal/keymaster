@@ -51,6 +51,6 @@ import globby from 'globby';
         "POINT_CONVERSION_UNCOMPRESSED = 4",
         "POINT_CONVERSION_HYBRID = 6"
     ]);
-
+    fs.mkdirSync('./lib/js');
     fs.writeFileSync('./lib/js/define.mjs', `export const ${DEFINE_ARRAY.join(",\n")};`);
 })();

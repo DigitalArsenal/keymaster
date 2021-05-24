@@ -4,7 +4,7 @@
 
 OPENSSL_VERSION=1.1.1j
 PREFIX=$(pwd)
-
+DEST_FOLDER="../../lib/wasm"
 DIRECTORY="openssl"
 #-${OPENSSL_VERSION}"
 DEST_FILE="openssl-${OPENSSL_VERSION}.tar.gz"
@@ -51,7 +51,7 @@ mkdir -p ${PREFIX}/include
 cp -R include/openssl ${PREFIX}/include
 
 echo "Copying libcrypto.a ..."
-
-cp libcrypto.a ../../lib/wasm/libcrypto.a
+mkdir -p ${DEST_FOLDER}
+cp libcrypto.a ${DEST_FOLDER}/libcrypto.a
 
 echo "Done"
