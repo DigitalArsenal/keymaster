@@ -58,6 +58,7 @@
     "ripemd160": "^2.0.2",
     "rollup": "^2.39.0",
     "rollup-plugin-terser": "^7.0.2",
-    "typescript": "^4.1.5"
+    "typescript": "^4.1.5",
+    "underscore": ">=1.12.1"
   }
 }
