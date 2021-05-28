@@ -18,8 +18,9 @@ import keymaster, {
 
 import { writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
-import { tmpdir } from "os";
 import { execSync } from "child_process";
+import { tmpdir as ostmpdir } from "os";
+const tmpdir = () => (process.env.DEV ? "./tmp" : ostmpdir());
 
 const key = createPBKDF2Key("SomeInput", "SomeSeed", 1);
 let dPublicKeys = { uncompressed: null, compressed: null };
@@ -71,7 +72,11 @@ describe("public key and address from private key", () => {
 
     assert.deepStrictEqual(key, Buffer.from(priv, "hex"));
     assert.deepStrictEqual(dPublicKeys.uncompressed, Buffer.from(pub, "hex"));
-    unlinkSync(tmpPath);
+    if (!process.env.DEV) {
+      unlinkSync(tmpPath);
+    } else {
+      console.log(output);
+    }
   };
 
   it("creates uncompressed public key / address", () => genKeys({ c: false }));

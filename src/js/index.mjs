@@ -140,7 +140,7 @@ class keymaster {
   /**
    * Create a keymaster instance.
    */
-  constructor() { }
+  constructor() {}
 
   /**
    * Initialize the keymaster instance.
@@ -388,7 +388,7 @@ class keymaster {
         });
       }
     }
-    let _critical = certificateSigningRequest ? '' : 'critical,';
+    let _critical = certificateSigningRequest ? "" : "critical,";
     let extensions = new Map([
       [NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_authority_key_identifier, authorityKeyIdentifier],
@@ -406,7 +406,12 @@ class keymaster {
       notAfter,
       version - 1,
       ...[keyHex, name, issuer, id, friendlyName, certificateSigningRequest].map((a) => this.writeString(a)),
-      this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat()),
+      this.writeUint32Array(
+        [...extensions.entries()]
+          .filter((a) => a[1].length)
+          .map((a) => [a[0], this.writeString(a[1])])
+          .flat()
+      ),
       outformat,
       ...[caPEM, caCertificate].map((a) => this.writeString(a))
     );
@@ -474,14 +479,19 @@ class keymaster {
       [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
       [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],*/
     ]);
-    console.log(extensions, [...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat());
+
     let memLocCSR = this.instance.createCertificateSigningRequest(
       curve,
       compressed,
       this.writeString(password),
       version - 1,
       ...[keyHex, name, id].map((a) => this.writeString(a)),
-      this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat())
+      this.writeUint32Array(
+        [...extensions.entries()]
+          .filter((a) => a[1].length)
+          .map((a) => [a[0], this.writeString(a[1])])
+          .flat()
+      )
     );
 
     let certRequest = this.readString(memLocCSR);
