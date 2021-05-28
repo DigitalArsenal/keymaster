@@ -186,13 +186,13 @@ describe("public key and address from private key", function () {
 
     signedClientCert = Keymaster.createCertificate({
       subjectKeyIdentifier: 'hash',
-      authorityKeyIdentifier: 'keyid:always',
-      key: clientPrivateKey,
+      authorityKeyIdentifier: 'keyid,issuer',
+      key: rootPrivateKey,
       curve,
       subjectAlternativeName: {
         DNS: ["localhost"],
       },
-      id: "36:27:70:b8:fe:6a:df:cc:8e:b1:c2:d6:5d:93:7a:23:82:af:9b:c5",
+      id: Date.now(),
       notBefore: -60 * 60,
       notAfter: 60 * 60 * 24 * 365.25 * 10,
       issuer: rootIssuerDN,
