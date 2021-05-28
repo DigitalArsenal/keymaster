@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-export prefix="localhostCA"
+export prefix="AAAAAAAAAAAAAAAAAAA:localhostCA"
 export tmpdir="../../tmp/gencerts"
 export ca_key="$tmpdir/ca.key.pem"
 export ca_cert="$tmpdir/ca.pem"
@@ -28,10 +28,9 @@ openssl req -new -x509 -subj "/CN=$prefix" -extensions v3_ca -days 3650 -key $ca
 fi
 
 openssl x509 -in $ca_cert -text -noout
+openssl x509 -in $ca_cert -text -noout > $tmpdir/ca.pem.txt
 
-openssl genrsa -out $server_key 2048
+openssl ecparam -name prime256v1 -genkey -noout -out $server_key
 
-openssl req -subj "/CN=server_$prefix" -extensions v3_req -sha256 -new -key $server_key -out $server_csr
+openssl req -subj "/CN=$prefix\_server" -extensions v3_req -sha256 -new -key $server_key -out $server_csr
 openssl x509 -req -extensions v3_req -days 3650 -sha256 -in $server_csr -CA $ca_cert -CAkey $ca_key -CAcreateserial -out $server_crt -extfile ./server.ext
-
-openssl x509 -in $tmpdir/ca.pem -text -noout > $tmpdir/ca.pem.txt

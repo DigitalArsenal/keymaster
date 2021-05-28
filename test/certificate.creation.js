@@ -53,8 +53,7 @@ const rootArgs = {
   notAfter: 60 * 60 * 24 * 365.25 * 10,
   issuer: null,
   name: null,
-  id: Date.now(),
-  basicConstraints: { CA: true, pathlen: 10 },
+  id: 1,
   keyUsage: {
     digitalSignature: false,
     nonRepudiation: false,
@@ -78,7 +77,8 @@ const rootArgs = {
     msCodeCom: false,
     msCTLSign: false,
     msEFS: false,
-  }
+  },
+  basicConstraints: { critical: true, CA: true, pathlen: 3 },
 };
 
 describe("public key and address from private key", function () {
@@ -102,7 +102,7 @@ describe("public key and address from private key", function () {
       key: rootPrivateKey,
       curve,
       outputtype: NID_Private,
-      outformat: V_ASN1_BIT_STRING,
+      outformat: PEM_TYPE_CLEAR,
       compressed: POINT_CONVERSION_UNCOMPRESSED,
     });
 
@@ -110,7 +110,7 @@ describe("public key and address from private key", function () {
 
     rootIssuerDN = `CN=AAAAAAAAAAA:${createPublicAddress(
       rootPublicKey
-    )}`;
+    )}`.slice(0, 34);
     rootCertificate = Keymaster.createCertificate({
       ...rootArgs,
       issuer: rootIssuerDN,
@@ -162,7 +162,6 @@ describe("public key and address from private key", function () {
       curve,
       name: clientNameDN,
       id: "FF",
-      basicConstraints: { CA: false, pathlen: 10 },
       keyUsage: {
         digitalSignature: true,
         nonRepudiation: false,
@@ -221,7 +220,7 @@ describe("public key and address from private key", function () {
         IP: ["10.10.10.1", "192.168.1.1"],
         email: ["info@digitalarsenal.io"],
       },
-      id: Date.now(),
+      id: 1,
       notBefore: -60 * 60 * 24 * 365.25 * 5,
       notAfter: 0,
       issuer: rootIssuerDN,

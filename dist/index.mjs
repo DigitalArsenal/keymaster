@@ -4450,11 +4450,11 @@ class keymaster {
     }
 
     let extensions = new Map([
-      [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
-      [NID_key_usage, typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage)],
-      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
       [NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_authority_key_identifier, authorityKeyIdentifier],
+      [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
+      [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
+      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
       [NID_subject_alt_name, _san.join(",")],
     ]);
 
@@ -4528,11 +4528,11 @@ class keymaster {
     }
 
     let extensions = new Map([
-      [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
-      [NID_key_usage, typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage)],
-      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
       [NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_subject_alt_name, _san.join(",")],
+      [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
+      [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
+      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
     ]);
 
     let memLocCSR = this.instance.createCertificateSigningRequest(
