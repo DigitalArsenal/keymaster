@@ -5,8 +5,8 @@ import base58 from "bs58";
 import { createPBKDF2Key } from "./utilities/deterministic.keygen.pbkdf2.js";
 import { createPublicAddress } from "./utilities/bitcoin.address.from.hex.js";
 import { clean } from "./utilities/utility.js";
-import { caKeyPath, caCertPath, serverKeyPath, serverCSRPath, serverCertPath } from "./utilities/common.js";
-import { writeFileSync, unlinkSync } from "fs";
+import { caKeyPath, caCertTextPath, caCertPath, serverKeyPath, serverCSRPath, serverCertPath } from "./utilities/common.js";
+import { writeFileSync, unlinkSync, fstat, writeFile } from "fs";
 import { join } from "path";
 import { tmpdir as ostmpdir } from "os";
 import { execSync } from "child_process";
@@ -39,9 +39,13 @@ let rootIssuerDN,
   rootCertificate,
   certificateSigningRequest,
   signedClientCert,
+  rootPrivateKeyPEM,
   rootPublicKey,
-  clientPublicKey;
+  clientPublicKey,
+  clientPrivateKeyPEM;
+
 const curve = NID_X9_62_prime256v1;
+
 const rootArgs = {
   key: rootPrivateKey,
   curve,
@@ -74,14 +78,9 @@ const rootArgs = {
     msCodeCom: false,
     msCTLSign: false,
     msEFS: false,
-  },
-  subjectAlternativeName: {
-    URI: ["https://digitalarsenal.io"],
-    DNS: ["digitarsenal.io"],
-    IP: ["10.10.10.1", "192.168.1.1"],
-    email: ["info@digitalarsenal.io"],
-  },
+  }
 };
+
 describe("public key and address from private key", function () {
   this.timeout(5000);
 
@@ -98,6 +97,17 @@ describe("public key and address from private key", function () {
       outformat: V_ASN1_BIT_STRING,
       compressed: POINT_CONVERSION_UNCOMPRESSED,
     });
+
+    rootPrivateKeyPEM = Keymaster.convertKey({
+      key: rootPrivateKey,
+      curve,
+      outputtype: NID_Private,
+      outformat: V_ASN1_BIT_STRING,
+      compressed: POINT_CONVERSION_UNCOMPRESSED,
+    });
+
+    writeFileSync(caKeyPath, rootPrivateKeyPEM);
+
     rootIssuerDN = `CN=AAAAAAAAAAA:${createPublicAddress(
       rootPublicKey
     )}`;
@@ -121,6 +131,7 @@ describe("public key and address from private key", function () {
       unlinkSync(caCertPath);
     } else {
       console.log(output);
+      writeFileSync(caCertTextPath, output);
     }
   });
 
@@ -137,7 +148,7 @@ describe("public key and address from private key", function () {
 
     clientNameDN = `O=DIGITALARSENAL.IO, OU=BTC, OU=0, CN=PERSON, CN=localhost`;
 
-    const clientPrivateKeyPEM = Keymaster.convertKey({
+    clientPrivateKeyPEM = Keymaster.convertKey({
       key: clientPrivateKey,
       curve,
       outputtype: NID_Private,
@@ -145,6 +156,7 @@ describe("public key and address from private key", function () {
     });
 
     writeFileSync(serverKeyPath, clientPrivateKeyPEM);
+
     certificateSigningRequest = Keymaster.createCertificateSigningRequest({
       key: clientPrivateKey,
       curve,
@@ -204,8 +216,8 @@ describe("public key and address from private key", function () {
       key: clientPrivateKey,
       curve,
       subjectAlternativeName: {
-        URI: ["https://digitalarsenal.io"],
-        DNS: ["digitarsenal.io"],
+        URI: ["localhost"],
+        DNS: ["localhost"],
         IP: ["10.10.10.1", "192.168.1.1"],
         email: ["info@digitalarsenal.io"],
       },

@@ -4457,7 +4457,7 @@ class keymaster {
       [NID_authority_key_identifier, authorityKeyIdentifier],
       [NID_subject_alt_name, _san.join(",")],
     ]);
-    console.log(extensions, [...extensions.entries()].map((a) => [a[0], this.writeString(a[1])]).flat());
+
     let memLocCert = this.instance.createCertificate(
       curve,
       compressed,
