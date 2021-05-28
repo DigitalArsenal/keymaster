@@ -9,6 +9,8 @@ const caKeyPath = join(tmpdir(), `ca.key.pem`),
     caCertTextPath = join(tmpdir(), `ca.cert.pem.txt`),
     serverKeyPath = join(tmpdir(), `server.key.pem`),
     serverCSRPath = join(tmpdir(), `server.csr.pem`),
-    serverCertPath = join(tmpdir(), `signed.client.pem`);
+    serverCSRTextPath = join(tmpdir(), `server.csr.pem.txt`),
+    serverCertPath = join(tmpdir(), `signed.client.pem`),
+    serverCertTextPath = join(tmpdir(), `signed.client.pem.txt`);
 
-export { caKeyPath, caCertTextPath, caCertPath, serverKeyPath, serverCSRPath, serverCertPath };
+export { caKeyPath, caCertTextPath, caCertPath, serverKeyPath, serverCSRPath, serverCSRTextPath, serverCertPath, serverCertTextPath };

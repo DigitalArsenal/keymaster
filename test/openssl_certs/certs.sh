@@ -30,7 +30,17 @@ fi
 openssl x509 -in $ca_cert -text -noout
 openssl x509 -in $ca_cert -text -noout > $tmpdir/ca.pem.txt
 
+if [ ! -f $server_key ]; then
+echo "Generating Server Key"
 openssl ecparam -name prime256v1 -genkey -noout -out $server_key
+fi
 
-openssl req -subj "/CN=$prefix\_server" -extensions v3_req -sha256 -new -key $server_key -out $server_csr
+openssl req -subj "/CN=localhost" -extensions v3_req -sha256 -new -key $server_key -out $server_csr
+
+openssl req -in $server_csr -text -noout
+openssl req -in $server_csr -text -noout > $tmpdir/csr.pem.txt
+
 openssl x509 -req -extensions v3_req -days 3650 -sha256 -in $server_csr -CA $ca_cert -CAkey $ca_key -CAcreateserial -out $server_crt -extfile ./server.ext
+
+openssl x509 -in $server_crt -text -noout
+openssl x509 -in $server_crt -text -noout > $tmpdir/server.crt.txt

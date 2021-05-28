@@ -349,6 +349,8 @@ int createCertificate(
     if (x509_req)
     {
         X509_set_subject_name(x509, X509_REQ_get_subject_name(x509_req));
+        int idx = X509_get_ext_by_NID(x509, 82, -1); //get the index
+        X509_delete_ext(x509, idx);
     }
     else
     {
@@ -397,9 +399,9 @@ int createCertificateSigningRequest(
     X509_REQ *x509_req = X509_REQ_new();
     X509_REQ_set_version(x509_req, version);
     X509_REQ_set_pubkey(x509_req, certStruct.evp_keyobject);
-    STACK_OF(X509_EXTENSION) *exts_req = sk_X509_EXTENSION_new_null();
-    add_ext_stacks(x509_req, exts_req, nidArrayPointer);
-    X509_REQ_add_extensions(x509_req, exts_req);
+    //STACK_OF(X509_EXTENSION) *exts_req = sk_X509_EXTENSION_new_null();
+    //add_ext_stacks(x509_req, exts_req, nidArrayPointer);
+    //X509_REQ_add_extensions(x509_req, exts_req);
     str2Name(namePointer, X509_REQ_get_subject_name(x509_req));
 
     int md_nid;

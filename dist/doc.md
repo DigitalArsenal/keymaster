@@ -236,7 +236,7 @@ Create a certificate
 | [settings.password] | <code>string</code> | <code>null</code> | Password to use |
 | [settings.notBefore] | <code>number</code> | <code>0</code> | Certificate validity start in seconds from current system time |
 | [settings.notAfter] | <code>number</code> | <code>31536000</code> | Certificate validity stop in seconds from current system time |
-| [settings.version] | <code>number</code> | <code>2</code> | Certificate version (actual version is 1 less than number) |
+| [settings.version] | <code>number</code> | <code>3</code> | Certificate version |
 | [settings.issuer] | <code>string</code> | <code>&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;ISSUER&quot;</code> | Certificate issuer csv Distinguished Name (DN) string |
 | [settings.name] | <code>string</code> | <code>&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;NAME&quot;</code> | Certificate name csv Distinguished Name (DN) string |
 | [settings.id] | <code>number</code> | <code>0</code> | Certificate ID number |
@@ -269,7 +269,7 @@ Create a certificate signing request
 | [settings.curve] | <code>number</code> | <code>NID_secp256k1</code> | Numerical ID (NID) for the Elliptic Curve (EC) to use |
 | [settings.compressed] | <code>number</code> | <code>POINT_CONVERSION_UNCOMPRESSED</code> | Which X9.62 (ECDSA) form, for encoding an EC point |
 | [settings.password] | <code>string</code> | <code>null</code> | Password to use |
-| [settings.version] | <code>number</code> | <code>2</code> | Certificate version (actual version is 1 less than number) |
+| [settings.version] | <code>number</code> | <code>3</code> | Certificate version |
 | [settings.name] | <code>string</code> | <code>&quot;C&#x3D;US, ST&#x3D;VA, L&#x3D;DZM, O&#x3D;MyOrg, OU&#x3D;dev, CN&#x3D;NAME&quot;</code> | Certificate name csv Distinguished Name (DN) string |
 | [settings.id] | <code>number</code> | <code>0</code> | Certificate ID number |
 | settings.basicConstraints | <code>Object</code> |  | Basic constraints on this certificate |

@@ -192,7 +192,7 @@ declare class keymaster {
      * @param {string} [settings.password=null] - Password to use
      * @param {number} [settings.notBefore=0] - Certificate validity start in seconds from current system time
      * @param {number} [settings.notAfter=31536000] - Certificate validity stop in seconds from current system time
-     * @param {number} [settings.version=2] - Certificate version (actual version is 1 less than number)
+     * @param {number} [settings.version=3] - Certificate version
      * @param {string} [settings.issuer=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER] - Certificate issuer csv Distinguished Name (DN) string
      * @param {string} [settings.name=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME] - Certificate name csv Distinguished Name (DN) string
      * @param {number} [settings.id=0] - Certificate ID number
@@ -246,7 +246,7 @@ declare class keymaster {
      * @param {number} [settings.curve=NID_secp256k1] - Numerical ID (NID) for the Elliptic Curve (EC) to use
      * @param {number} [settings.compressed=POINT_CONVERSION_UNCOMPRESSED] - Which X9.62 (ECDSA) form, for encoding an EC point
      * @param {string} [settings.password=null] - Password to use
-     * @param {number} [settings.version=2] - Certificate version (actual version is 1 less than number)
+     * @param {number} [settings.version=3] - Certificate version
      * @param {string} [settings.name=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME] - Certificate name csv Distinguished Name (DN) string
      * @param {number} [settings.id=0] - Certificate ID number
      * @param {Object} settings.basicConstraints - Basic constraints on this certificate

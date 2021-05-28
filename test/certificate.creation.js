@@ -5,7 +5,7 @@ import base58 from "bs58";
 import { createPBKDF2Key } from "./utilities/deterministic.keygen.pbkdf2.js";
 import { createPublicAddress } from "./utilities/bitcoin.address.from.hex.js";
 import { clean } from "./utilities/utility.js";
-import { caKeyPath, caCertTextPath, caCertPath, serverKeyPath, serverCSRPath, serverCertPath } from "./utilities/common.js";
+import { caKeyPath, caCertTextPath, caCertPath, serverKeyPath, serverCSRPath, serverCSRTextPath, serverCertPath, serverCertTextPath } from "./utilities/common.js";
 import { writeFileSync, unlinkSync, fstat, writeFile } from "fs";
 import { join } from "path";
 import { tmpdir as ostmpdir } from "os";
@@ -146,7 +146,7 @@ describe("public key and address from private key", function () {
       compressed: POINT_CONVERSION_UNCOMPRESSED,
     });
 
-    clientNameDN = `O=DIGITALARSENAL.IO, OU=BTC, OU=0, CN=PERSON, CN=localhost`;
+    clientNameDN = `CN=localhost`;
 
     clientPrivateKeyPEM = Keymaster.convertKey({
       key: clientPrivateKey,
@@ -159,39 +159,9 @@ describe("public key and address from private key", function () {
 
     certificateSigningRequest = Keymaster.createCertificateSigningRequest({
       key: clientPrivateKey,
+      version: 1,
       curve,
       name: clientNameDN,
-      id: "FF",
-      keyUsage: {
-        digitalSignature: true,
-        nonRepudiation: false,
-        keyEncipherment: false,
-        dataEncipherment: false,
-        keyAgreement: false,
-        keyCertSign: true,
-        cRLSign: true,
-        encipherOnly: false,
-        decipherOnly: false,
-      },
-      extKeyUsage: {
-        serverAuth: false,
-        clientAuth: true,
-        codeSigning: true,
-        emailProtection: false,
-        timeStamping: true,
-        OCSPSigning: false,
-        ipsecIKE: false,
-        msCodeInd: false,
-        msCodeCom: false,
-        msCTLSign: false,
-        msEFS: false,
-      },
-      subjectAlternativeName: {
-        URI: ["localhost"],
-        DNS: ["localhost"],
-        IP: ["10.10.10.1", "192.168.1.1"],
-        email: ["info@digitalarsenal.io"],
-      },
     });
     writeFileSync(serverCSRPath, certificateSigningRequest);
     const output = execSync(`openssl req -in ${serverCSRPath} -text -noout`).toString(
@@ -205,6 +175,9 @@ describe("public key and address from private key", function () {
     );
     if (!process.env.DEV) {
       unlinkSync(serverCSRPath);
+    } else {
+      console.log(output);
+      writeFileSync(serverCSRTextPath, output);
     }
   });
 
@@ -212,20 +185,30 @@ describe("public key and address from private key", function () {
     let { Keymaster } = this;
 
     signedClientCert = Keymaster.createCertificate({
+      subjectKeyIdentifier: 'hash',
+      authorityKeyIdentifier: 'keyid:always',
       key: clientPrivateKey,
       curve,
       subjectAlternativeName: {
-        URI: ["localhost"],
         DNS: ["localhost"],
-        IP: ["10.10.10.1", "192.168.1.1"],
-        email: ["info@digitalarsenal.io"],
       },
-      id: 1,
-      notBefore: -60 * 60 * 24 * 365.25 * 5,
-      notAfter: 0,
+      id: "36:27:70:b8:fe:6a:df:cc:8e:b1:c2:d6:5d:93:7a:23:82:af:9b:c5",
+      notBefore: -60 * 60,
+      notAfter: 60 * 60 * 24 * 365.25 * 10,
       issuer: rootIssuerDN,
       name: clientNameDN,
       certificateSigningRequest,
+      keyUsage: {
+        digitalSignature: true,
+        nonRepudiation: true,
+        keyEncipherment: true,
+        dataEncipherment: true,
+        keyAgreement: false,
+        keyCertSign: false,
+        cRLSign: false,
+        encipherOnly: false,
+        decipherOnly: false,
+      },
     });
     writeFileSync(serverCertPath, signedClientCert);
     const output = execSync(
@@ -241,6 +224,8 @@ describe("public key and address from private key", function () {
       unlinkSync(serverCertPath);
     } else {
       console.log(output);
+      writeFileSync(serverCertTextPath, output);
+
     }
   });
 

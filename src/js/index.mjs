@@ -328,7 +328,7 @@ class keymaster {
    * @param {string} [settings.password=null] - Password to use
    * @param {number} [settings.notBefore=0] - Certificate validity start in seconds from current system time
    * @param {number} [settings.notAfter=31536000] - Certificate validity stop in seconds from current system time
-   * @param {number} [settings.version=2] - Certificate version (actual version is 1 less than number)
+   * @param {number} [settings.version=3] - Certificate version
    * @param {string} [settings.issuer=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER] - Certificate issuer csv Distinguished Name (DN) string
    * @param {string} [settings.name=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME] - Certificate name csv Distinguished Name (DN) string
    * @param {number} [settings.id=0] - Certificate ID number
@@ -354,7 +354,7 @@ class keymaster {
     password = null,
     notBefore = 0,
     notAfter = 31536000,
-    version = 2,
+    version = 3,
     issuer = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER",
     name = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME",
     id = 0,
@@ -388,12 +388,12 @@ class keymaster {
         });
       }
     }
-
+    let _critical = certificateSigningRequest ? '' : 'critical,';
     let extensions = new Map([
       [NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_authority_key_identifier, authorityKeyIdentifier],
-      [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
-      [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
+      [NID_basic_constraints, `${_critical}${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
+      [NID_key_usage, _critical + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
       [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
       [NID_subject_alt_name, _san.join(",")],
     ]);
@@ -404,7 +404,7 @@ class keymaster {
       this.writeString(password),
       notBefore,
       notAfter,
-      version,
+      version - 1,
       ...[keyHex, name, issuer, id, friendlyName, certificateSigningRequest].map((a) => this.writeString(a)),
       this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat()),
       outformat,
@@ -425,7 +425,7 @@ class keymaster {
    * @param {number} [settings.curve=NID_secp256k1] - Numerical ID (NID) for the Elliptic Curve (EC) to use
    * @param {number} [settings.compressed=POINT_CONVERSION_UNCOMPRESSED] - Which X9.62 (ECDSA) form, for encoding an EC point
    * @param {string} [settings.password=null] - Password to use
-   * @param {number} [settings.version=2] - Certificate version (actual version is 1 less than number)
+   * @param {number} [settings.version=3] - Certificate version
    * @param {string} [settings.name=C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME] - Certificate name csv Distinguished Name (DN) string
    * @param {number} [settings.id=0] - Certificate ID number
    * @param {Object} settings.basicConstraints - Basic constraints on this certificate
@@ -440,21 +440,21 @@ class keymaster {
     curve = NID_secp256k1,
     compressed = POINT_CONVERSION_UNCOMPRESSED,
     password = null,
-    version = 2,
+    version = 3,
     name = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=DEFAULT",
     id = "0",
-    basicConstraints = { CA: false, pathlen: 0 },
+    basicConstraints = null,
     keyUsage = this.keyUsage,
     extKeyUsage = this.extKeyUsage,
     subjectAlternativeName = this.subjectAlternativeName,
-    subjectKeyIdentifier = "hash",
+    subjectKeyIdentifier = null,
   }) {
     if (key) {
       this.key = key;
     }
     let { keyHex, calcKeyUsage } = this;
 
-    let _pathlen = basicConstraints.CA ? `,pathlen:${Math.abs(parseInt(basicConstraints.pathlen) || 0)}` : "";
+    let _pathlen = basicConstraints?.CA ? `,pathlen:${Math.abs(parseInt(basicConstraints.pathlen) || 0)}` : "";
 
     let _san = [];
 
@@ -468,20 +468,20 @@ class keymaster {
     }
 
     let extensions = new Map([
-      [NID_subject_key_identifier, subjectKeyIdentifier],
+      /*[NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_subject_alt_name, _san.join(",")],
       [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
       [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
-      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
+      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],*/
     ]);
-
+    console.log(extensions, [...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat());
     let memLocCSR = this.instance.createCertificateSigningRequest(
       curve,
       compressed,
       this.writeString(password),
-      version,
+      version - 1,
       ...[keyHex, name, id].map((a) => this.writeString(a)),
-      this.writeUint32Array([...extensions.entries()].map((a) => [a[0], this.writeString(a[1])]).flat())
+      this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat())
     );
 
     let certRequest = this.readString(memLocCSR);

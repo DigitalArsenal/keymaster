@@ -7,11 +7,6 @@ req_extensions = v3_req
 subjectAltName=DNS:localhost
 keyUsage=digitalSignature
 extendedKeyUsage=serverAuth
-[ v3_ca ]
-subjectKeyIdentifier=hash
-authorityKeyIdentifier=keyid:always,issuer
-basicConstraints = critical, CA:TRUE, pathlen:3
-keyUsage = critical, cRLSign, keyCertSign
 [ v3_req ]
 basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
