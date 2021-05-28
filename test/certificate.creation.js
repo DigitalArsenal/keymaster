@@ -5,11 +5,13 @@ import base58 from "bs58";
 import { createPBKDF2Key } from "./utilities/deterministic.keygen.pbkdf2.js";
 import { createPublicAddress } from "./utilities/bitcoin.address.from.hex.js";
 import { clean } from "./utilities/utility.js";
-
-import { writeFileSync, unlinkSync, fstat } from "fs";
+import { caKeyPath, caCertPath, serverKeyPath, serverCSRPath, serverCertPath } from "./utilities/common.js";
+import { writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
-import { tmpdir } from "os";
+import { tmpdir as ostmpdir } from "os";
 import { execSync } from "child_process";
+
+const tmpdir = () => process.env.DEV ? "./tmp" : ostmpdir();
 
 import keymaster, {
   NID_X25519,
@@ -31,6 +33,7 @@ import keymaster, {
 
 const rootPrivateKey = createPBKDF2Key("SomeInput", "SomeSeed", 1);
 const clientPrivateKey = createPBKDF2Key("SomeInput1", "SomeSeed1", 1);
+
 let rootIssuerDN,
   clientNameDN,
   rootCertificate,
@@ -38,18 +41,18 @@ let rootIssuerDN,
   signedClientCert,
   rootPublicKey,
   clientPublicKey;
-const curve = NID_secp256k1;
+const curve = NID_X9_62_prime256v1;
 const rootArgs = {
   key: rootPrivateKey,
   curve,
-  notBefore: -60 * 60 * 24 * 365.25 * 10,
-  notAfter: 0,
+  notBefore: -60 * 60,
+  notAfter: 60 * 60 * 24 * 365.25 * 10,
   issuer: null,
   name: null,
-  id: 1,
+  id: Date.now(),
   basicConstraints: { CA: true, pathlen: 10 },
   keyUsage: {
-    digitalSignature: true,
+    digitalSignature: false,
     nonRepudiation: false,
     keyEncipherment: false,
     dataEncipherment: false,
@@ -62,9 +65,9 @@ const rootArgs = {
   extKeyUsage: {
     serverAuth: false,
     clientAuth: false,
-    codeSigning: true,
+    codeSigning: false,
     emailProtection: false,
-    timeStamping: true,
+    timeStamping: false,
     OCSPSigning: false,
     ipsecIKE: false,
     msCodeInd: false,
@@ -95,7 +98,7 @@ describe("public key and address from private key", function () {
       outformat: V_ASN1_BIT_STRING,
       compressed: POINT_CONVERSION_UNCOMPRESSED,
     });
-    rootIssuerDN = `O=secp256k1, OU=BTC, CN=${createPublicAddress(
+    rootIssuerDN = `CN=AAAAAAAAAAA:${createPublicAddress(
       rootPublicKey
     )}`;
     rootCertificate = Keymaster.createCertificate({
@@ -104,10 +107,9 @@ describe("public key and address from private key", function () {
       name: rootIssuerDN,
     });
 
-    const tmpPath = join(tmpdir(), `ca.cert.pem`);
-    writeFileSync(tmpPath, rootCertificate);
+    writeFileSync(caCertPath, rootCertificate);
     const output = execSync(
-      `openssl x509 -in ${tmpPath} -text -noout`
+      `openssl x509 -in ${caCertPath} -text -noout`
     ).toString("utf8");
     assert.deepStrictEqual(
       rootPublicKey,
@@ -115,7 +117,11 @@ describe("public key and address from private key", function () {
         .slice(output.indexOf("pub:\n") + 4, output.indexOf("ASN1 OID:"))
         .replace(clean, "")
     );
-    unlinkSync(tmpPath);
+    if (!process.env.DEV) {
+      unlinkSync(caCertPath);
+    } else {
+      console.log(output);
+    }
   });
 
   it("creates a CSR", async function () {
@@ -129,9 +135,16 @@ describe("public key and address from private key", function () {
       compressed: POINT_CONVERSION_UNCOMPRESSED,
     });
 
-    clientNameDN = `O=DIGITALARSENAL.IO, OU=BTC, OU=0, CN=PERSON, CN=${createPublicAddress(
-      clientPublicKey
-    )}`;
+    clientNameDN = `O=DIGITALARSENAL.IO, OU=BTC, OU=0, CN=PERSON, CN=localhost`;
+
+    const clientPrivateKeyPEM = Keymaster.convertKey({
+      key: clientPrivateKey,
+      curve,
+      outputtype: NID_Private,
+      outformat: PEM_TYPE_CLEAR
+    });
+
+    writeFileSync(serverKeyPath, clientPrivateKeyPEM);
     certificateSigningRequest = Keymaster.createCertificateSigningRequest({
       key: clientPrivateKey,
       curve,
@@ -163,15 +176,14 @@ describe("public key and address from private key", function () {
         msEFS: false,
       },
       subjectAlternativeName: {
-        URI: ["https://digitalarsenal.io"],
-        DNS: ["digitarsenal.io"],
+        URI: ["localhost"],
+        DNS: ["localhost"],
         IP: ["10.10.10.1", "192.168.1.1"],
         email: ["info@digitalarsenal.io"],
       },
     });
-    const tmpPath = join(tmpdir(), `csr.pem`);
-    writeFileSync(tmpPath, certificateSigningRequest);
-    const output = execSync(`openssl req -in ${tmpPath} -text -noout`).toString(
+    writeFileSync(serverCSRPath, certificateSigningRequest);
+    const output = execSync(`openssl req -in ${serverCSRPath} -text -noout`).toString(
       "utf8"
     );
     assert.deepStrictEqual(
@@ -180,24 +192,33 @@ describe("public key and address from private key", function () {
         .slice(output.indexOf("pub:\n") + 4, output.indexOf("ASN1 OID:"))
         .replace(clean, "")
     );
-    unlinkSync(tmpPath);
+    if (!process.env.DEV) {
+      unlinkSync(serverCSRPath);
+    }
   });
 
   it("creates a signed certificate from a signing request", async function () {
     let { Keymaster } = this;
 
     signedClientCert = Keymaster.createCertificate({
-      ...rootArgs,
+      key: clientPrivateKey,
+      curve,
+      subjectAlternativeName: {
+        URI: ["https://digitalarsenal.io"],
+        DNS: ["digitarsenal.io"],
+        IP: ["10.10.10.1", "192.168.1.1"],
+        email: ["info@digitalarsenal.io"],
+      },
+      id: Date.now(),
       notBefore: -60 * 60 * 24 * 365.25 * 5,
       notAfter: 0,
       issuer: rootIssuerDN,
       name: clientNameDN,
       certificateSigningRequest,
     });
-    const tmpPath = join(tmpdir(), `signed.client.crt`);
-    writeFileSync(tmpPath, signedClientCert);
+    writeFileSync(serverCertPath, signedClientCert);
     const output = execSync(
-      `openssl x509 -in ${tmpPath} -text -noout`
+      `openssl x509 -in ${serverCertPath} -text -noout`
     ).toString("utf8");
     assert.deepStrictEqual(
       clientPublicKey,
@@ -205,7 +226,11 @@ describe("public key and address from private key", function () {
         .slice(output.indexOf("pub:\n") + 4, output.indexOf("ASN1 OID:"))
         .replace(clean, "")
     );
-    unlinkSync(tmpPath);
+    if (!process.env.DEV) {
+      unlinkSync(serverCertPath);
+    } else {
+      console.log(output);
+    }
   });
 
   /**

@@ -140,7 +140,7 @@ class keymaster {
   /**
    * Create a keymaster instance.
    */
-  constructor() {}
+  constructor() { }
 
   /**
    * Initialize the keymaster instance.
@@ -397,7 +397,7 @@ class keymaster {
       [NID_authority_key_identifier, authorityKeyIdentifier],
       [NID_subject_alt_name, _san.join(",")],
     ]);
-
+    console.log(extensions, [...extensions.entries()].map((a) => [a[0], this.writeString(a[1])]).flat())
     let memLocCert = this.instance.createCertificate(
       curve,
       compressed,
@@ -406,7 +406,7 @@ class keymaster {
       notAfter,
       version,
       ...[keyHex, name, issuer, id, friendlyName, certificateSigningRequest].map((a) => this.writeString(a)),
-      this.writeUint32Array([...extensions.entries()].map((a) => [a[0], this.writeString(a[1])]).flat()),
+      this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat()),
       outformat,
       ...[caPEM, caCertificate].map((a) => this.writeString(a))
     );
