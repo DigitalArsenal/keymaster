@@ -42,7 +42,8 @@ async function main() {
     const publicKeyHex = getPublicFromPrivateHex(privateKeyHex, undefined, false);
     const publicKeyHexCompressed = getPublicFromPrivateHex(privateKeyHex, undefined, true);
 
-    const keys = await importKey("jwk", jwkConv(privateKeyHex), { name: "ECDSA", namedCurve: "K-256" }, true, ["sign", "verify"]);
+    const namedCurve = "P-256";
+    const keys = await importKey("jwk", jwkConv(privateKeyHex, null, namedCurve), { name: "ECDSA", namedCurve }, true, ["sign", "verify"]);
 
     const keyExt = await exportKey("jwk", keys);
 
@@ -56,8 +57,8 @@ async function main() {
     let { d, ...pubKeyExt } = keyExt;
 
     const caKeys = {
-        privateKey: await importKey("jwk", keyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["sign"]),
-        publicKey: await importKey("jwk", pubKeyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["verify"]),
+        privateKey: await importKey("jwk", keyExt, { name: "ECDSA", namedCurve: "P-256" }, true, ["sign"]),
+        publicKey: await importKey("jwk", pubKeyExt, { name: "ECDSA", namedCurve: "P-256" }, true, ["verify"]),
     };
 
     let { digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment } = x509.KeyUsageFlags;
@@ -117,7 +118,7 @@ async function main() {
         publicKey: serverKey.publicKey,
         signingKey: caKeys.privateKey,
         extensions: [
-            //await new x509.AuthorityKeyIdentifierExtension(caCert),
+            new x509.KeyUsagesExtension(digitalSignature | nonRepudiation | keyEncipherment | dataEncipherment, true),
             await x509.AuthorityKeyIdentifierExtension.create(caKeys.publicKey),
             SAN
         ]
