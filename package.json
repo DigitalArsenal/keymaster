@@ -8,6 +8,7 @@
     "postinstall": "npm run build:openssl:wasm",
     "test": "mocha -s 300 --require test/utilities/hooks.js",
     "test:dev": "env DEV=true mocha -s 300 -w --parallel --require test/utilities/hooks.js ./test ./src",
+    "test:devx509": "env DEV=true nodemon ./test/utilities/peculiarventures.x509.cagen.js",
     "test:dev:server": "env DEV=true nodemon -w ./tmp -e crt,pem ./test/utilities/https.server.test.js",
     "test:opensslcert": "cd ./test/openssl_certs && ./certs.sh",
     "test:openssl:server": "env DEV=true nodemon -w ./tmp/gencerts -e crt,pem ./test/utilities/https.openssl.server.test.js",
@@ -48,7 +49,10 @@
   },
   "homepage": "https://github.com/DigitalArsenal/keymaster#readme",
   "devDependencies": {
+    "@peculiar/webcrypto": "^1.1.7",
+    "@peculiar/x509": "^1.3.0",
     "@rollup/plugin-wasm": "^5.1.2",
+    "base64url": "^3.0.1",
     "bitcoinjs-lib": "5.2.0",
     "bs58": "^4.0.1",
     "eccrypto-js": "^5.4.0",
@@ -62,6 +66,7 @@
     "rollup": "^2.39.0",
     "rollup-plugin-terser": "^7.0.2",
     "typescript": "^4.1.5",
-    "underscore": ">=1.12.1"
+    "underscore": ">=1.12.1",
+    "webcrypto-liner": "^1.2.4"
   }
 }
