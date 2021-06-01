@@ -58,13 +58,17 @@ async function main() {
         length: 256
     };
 
-    const caKeys = await generateKey(algorithm, true, ["sign", "verify"]);
-
     let { d, ...pubKeyExt } = keyExt;
+
+    const caKeys = {
+        privateKey: await importKey("jwk", keyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["sign"]),
+        publicKey: await importKey("jwk", pubKeyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["verify"]),
+    };
+
 
     const caCert = await x509.X509CertificateGenerator.createSelfSigned({
         serialNumber: "01",
-        name: "CN=localhostCA",
+        name: "CN=AAAAAAAAAAAAAAAAAAAAAAAAAA1.localhostCA",
         notBefore: new Date("2020/01/01"),
         notAfter: new Date("2022/01/02"),
         signingAlgorithm: algorithm,
@@ -73,6 +77,8 @@ async function main() {
             new x509.BasicConstraintsExtension(true, 2, true),
             new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
             await x509.SubjectKeyIdentifierExtension.create(caKeys.publicKey),
+            await x509.AuthorityKeyIdentifierExtension.create(caKeys.publicKey),
+
         ]
     });
 
@@ -85,10 +91,9 @@ async function main() {
     ));
     writeFileSync(caCertPath, caCert.toString("pem"));
 
-    const convertedCAKeys = {
-        privateKey: await importKey("jwk", keyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["sign"]),
-        publicKey: await importKey("jwk", pubKeyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["verify"]),
-    };
+    console.log(execSync(
+        `openssl x509 -in ${caCertPath} -text -noout`
+    ).toString("utf8"));
 
     let SAN = new x509.SubjectAlternativeNameExtension({
         dns: ["localhost", `localhost:${port}`],
@@ -119,17 +124,18 @@ async function main() {
         notAfter: new Date("2022/01/02"),
         signingAlgorithm: algorithm,
         publicKey: serverKey.publicKey,
-        signingKey: convertedCAKeys.privateKey,
+        signingKey: caKeys.privateKey,
         extensions: [
-            await new x509.AuthorityKeyIdentifierExtension(caCert),
+            //await new x509.AuthorityKeyIdentifierExtension(caCert),
+            await x509.AuthorityKeyIdentifierExtension.create(caKeys.publicKey),
             SAN
         ]
     });
     writeFileSync(serverCertPath, serverCert.toString('pem'));
-    const output = execSync(
+
+    console.log(execSync(
         `openssl x509 -in ${serverCertPath} -text -noout`
-    ).toString("utf8");
-    console.log(output);
+    ).toString("utf8"));
 }
 
 main();
