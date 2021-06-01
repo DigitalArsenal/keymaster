@@ -140,7 +140,7 @@ class keymaster {
   /**
    * Create a keymaster instance.
    */
-  constructor() {}
+  constructor() { }
 
   /**
    * Initialize the keymaster instance.
@@ -358,7 +358,7 @@ class keymaster {
     issuer = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER",
     name = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME",
     id = 0,
-    basicConstraints = { CA: false, pathlen: 0 },
+    basicConstraints = { CA: false, pathlen: 0, critical: true },
     keyUsage = this.keyUsage,
     extKeyUsage = this.extKeyUsage,
     subjectAlternativeName = this.subjectAlternativeName,
@@ -376,8 +376,6 @@ class keymaster {
 
     let { keyHex, calcKeyUsage } = this;
 
-    let _pathlen = basicConstraints.CA ? `,pathlen:${Math.abs(parseInt(basicConstraints.pathlen) || 0)}` : "";
-
     let _san = [];
 
     for (let ext in subjectAlternativeName) {
@@ -392,7 +390,7 @@ class keymaster {
     let extensions = new Map([
       [NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_authority_key_identifier, authorityKeyIdentifier],
-      [NID_basic_constraints, `${_critical}${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
+      [NID_basic_constraints, `${certificateSigningRequest || basicConstraints.critical ? "critical," : ""}${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${basicConstraints.CA ? `,pathlen:${basicConstraints.pathlen}` : ""}`],
       [NID_key_usage, _critical + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
       [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
       [NID_subject_alt_name, _san.join(",")],

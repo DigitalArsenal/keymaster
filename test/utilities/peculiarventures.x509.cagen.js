@@ -2,15 +2,13 @@
 import elliptic from "elliptic";
 import { jwkConv } from "./utility.js";
 import { crypto as lcrypto } from "webcrypto-liner";
-import base64URL from "base64url";
 import { pbkdf2Sync } from 'crypto';
 import * as x509 from '@peculiar/x509';
 import { tmpdir as ostmpdir } from "os";
 import { execSync } from "child_process";
 import { caKeyPath, caCertPath, serverKeyPath, serverCSRPath, serverCertPath } from "./common.js";
 
-const tmpdir = () => process.env.DEV ? "./tmp" : ostmpdir();
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 
 x509.cryptoProvider.set(lcrypto);
 
@@ -24,7 +22,6 @@ exportKey = _b(exportKey);
 deriveBits = _b(deriveBits);
 deriveKey = _b(deriveKey);
 generateKey = _b(generateKey);
-let port = 8000;
 
 const getPublicFromPrivateHex = (privateHex, curve = "secp256k1", compressed = true) => {
     let ec = new elliptic.ec(curve);
@@ -41,9 +38,9 @@ async function main() {
 
     const publicKeyHex = getPublicFromPrivateHex(privateKeyHex, undefined, false);
     const publicKeyHexCompressed = getPublicFromPrivateHex(privateKeyHex, undefined, true);
-
+    console.log(publicKeyHex);
     const namedCurve = "P-256";
-    const keys = await importKey("jwk", jwkConv(privateKeyHex, null, namedCurve), { name: "ECDSA", namedCurve }, true, ["sign", "verify"]);
+    const keys = await importKey("jwk", jwkConv(privateKeyHex, publicKeyHex, namedCurve), { name: "ECDSA", namedCurve }, true, ["sign", "verify"]);
 
     const keyExt = await exportKey("jwk", keys);
 

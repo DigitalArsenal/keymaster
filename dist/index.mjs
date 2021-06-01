@@ -4418,7 +4418,7 @@ class keymaster {
     issuer = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=ISSUER",
     name = "C=US, ST=VA, L=DZM, O=MyOrg, OU=dev, CN=NAME",
     id = 0,
-    basicConstraints = { CA: false, pathlen: 0 },
+    basicConstraints = { CA: false, pathlen: 0, critical: true },
     keyUsage = this.keyUsage,
     extKeyUsage = this.extKeyUsage,
     subjectAlternativeName = this.subjectAlternativeName,
@@ -4436,8 +4436,6 @@ class keymaster {
 
     let { keyHex, calcKeyUsage } = this;
 
-    let _pathlen = basicConstraints.CA ? `,pathlen:${Math.abs(parseInt(basicConstraints.pathlen) || 0)}` : "";
-
     let _san = [];
 
     for (let ext in subjectAlternativeName) {
@@ -4448,11 +4446,11 @@ class keymaster {
         });
       }
     }
-    let _critical = certificateSigningRequest ? '' : 'critical,';
+    let _critical = certificateSigningRequest ? "" : "critical,";
     let extensions = new Map([
       [NID_subject_key_identifier, subjectKeyIdentifier],
       [NID_authority_key_identifier, authorityKeyIdentifier],
-      [NID_basic_constraints, `${_critical}${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
+      [NID_basic_constraints, `${certificateSigningRequest || basicConstraints.critical ? "critical," : ""}${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${basicConstraints.CA ? `,pathlen:${basicConstraints.pathlen}` : ""}`],
       [NID_key_usage, _critical + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
       [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],
       [NID_subject_alt_name, _san.join(",")],
@@ -4466,7 +4464,12 @@ class keymaster {
       notAfter,
       version - 1,
       ...[keyHex, name, issuer, id, friendlyName, certificateSigningRequest].map((a) => this.writeString(a)),
-      this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat()),
+      this.writeUint32Array(
+        [...extensions.entries()]
+          .filter((a) => a[1].length)
+          .map((a) => [a[0], this.writeString(a[1])])
+          .flat()
+      ),
       outformat,
       ...[caPEM, caCertificate].map((a) => this.writeString(a))
     );
@@ -4531,14 +4534,19 @@ class keymaster {
       [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
       [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],*/
     ]);
-    console.log(extensions, [...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat());
+
     let memLocCSR = this.instance.createCertificateSigningRequest(
       curve,
       compressed,
       this.writeString(password),
       version - 1,
       ...[keyHex, name, id].map((a) => this.writeString(a)),
-      this.writeUint32Array([...extensions.entries()].filter((a) => a[1].length).map((a) => [a[0], this.writeString(a[1])]).flat())
+      this.writeUint32Array(
+        [...extensions.entries()]
+          .filter((a) => a[1].length)
+          .map((a) => [a[0], this.writeString(a[1])])
+          .flat()
+      )
     );
 
     let certRequest = this.readString(memLocCSR);
