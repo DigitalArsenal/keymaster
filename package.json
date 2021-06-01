@@ -1,11 +1,10 @@
 {
   "name": "@digitalarsenal.io/keymaster",
-  "version": "1.1.1j.0.3",
+  "version": "1.1.1j.0.4",
   "description": "Crypto Certificate Library",
   "main": "dist/index.mjs",
   "type": "module",
   "scripts": {
-    "postinstall": "npm run build:openssl:wasm",
     "test": "mocha -s 300 --require test/utilities/hooks.js",
     "test:dev": "env DEV=true mocha -s 300 -w --parallel --require test/utilities/hooks.js ./test ./src",
     "test:devx509": "env DEV=true nodemon ./test/utilities/peculiarventures.x509.cagen.js",
