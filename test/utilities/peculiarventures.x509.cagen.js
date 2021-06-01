@@ -44,12 +44,7 @@ async function main() {
 
     const keys = await importKey("jwk", jwkConv(privateKeyHex), { name: "ECDSA", namedCurve: "K-256" }, true, ["sign", "verify"]);
 
-    console.log(keys, "\n", jwkConv(privateKeyHex));
-
     const keyExt = await exportKey("jwk", keys);
-    console.log(publicKeyHex, "\n\n", publicKeyHexCompressed, "\n\n", base64URL.decode(keyExt.d, "hex"));
-    console.log(base64URL.decode(keyExt.x, "hex"));
-    console.log(base64URL.decode(keyExt.y, "hex"));
 
     let algorithm = {
         name: "ECDSA",
@@ -65,19 +60,20 @@ async function main() {
         publicKey: await importKey("jwk", pubKeyExt, { name: "ECDSA", namedCurve: "K-256" }, true, ["verify"]),
     };
 
+    let { digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment } = x509.KeyUsageFlags;
 
     const caCert = await x509.X509CertificateGenerator.createSelfSigned({
         serialNumber: "01",
-        name: "CN=AAAAAAAAAAAAAAAAAAAAAAAAAA1.localhostCA",
+        name: "CN=AAA.x509.localhostCA",
         notBefore: new Date("2020/01/01"),
         notAfter: new Date("2022/01/02"),
         signingAlgorithm: algorithm,
         keys: caKeys,
         extensions: [
             new x509.BasicConstraintsExtension(true, 2, true),
-            new x509.ExtendedKeyUsageExtension(["1.2.3.4.5.6.7", "2.3.4.5.6.7.8"], true),
             await x509.SubjectKeyIdentifierExtension.create(caKeys.publicKey),
             await x509.AuthorityKeyIdentifierExtension.create(caKeys.publicKey),
+            new x509.KeyUsagesExtension(digitalSignature | nonRepudiation | keyEncipherment | dataEncipherment, true),
 
         ]
     });
@@ -96,12 +92,7 @@ async function main() {
     ).toString("utf8"));
 
     let SAN = new x509.SubjectAlternativeNameExtension({
-        dns: ["localhost", `localhost:${port}`],
-        email: ["root@localhost"],
-        ip: ["127.0.0.1", "0.0.0.0", "192.168.1.227"],
-        guid: ["{ccc98a31-ff44-bc31-9a31-47bde489900a}"],
-        upn: ["user"],
-        url: [`https://localhost:${port}`, "https://localhost"]
+        dns: ["localhost"]
     });
 
 

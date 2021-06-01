@@ -108,9 +108,9 @@ describe("public key and address from private key", function () {
 
     writeFileSync(caKeyPath, rootPrivateKeyPEM);
 
-    rootIssuerDN = `CN=AAAAAAAAAAA:${createPublicAddress(
+    rootIssuerDN = `CN=AAA-BTC:${createPublicAddress(
       rootPublicKey
-    )}`.slice(0, 34);
+    )}`;
     rootCertificate = Keymaster.createCertificate({
       ...rootArgs,
       issuer: rootIssuerDN,
