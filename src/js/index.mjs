@@ -471,12 +471,8 @@ class keymaster {
     }
 
     let extensions = new Map([
-      /*[NID_subject_key_identifier, subjectKeyIdentifier],
-      [NID_subject_alt_name, _san.join(",")],
-      [NID_basic_constraints, `critical,${basicConstraints.CA ? "CA:TRUE" : "CA:FALSE"}${_pathlen}`],
-      [NID_key_usage, "critical," + (typeof keyUsage === "string" ? keyUsage : calcKeyUsage(keyUsage))],
-      [NID_ext_key_usage, typeof extKeyUsage === "string" ? extKeyUsage : calcKeyUsage(extKeyUsage)],*/
-    ]);
+
+    ]); //TODO requested extensions
 
     let memLocCSR = this.instance.createCertificateSigningRequest(
       curve,
