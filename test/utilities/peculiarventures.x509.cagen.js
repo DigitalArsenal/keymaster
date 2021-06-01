@@ -38,7 +38,7 @@ async function main() {
 
     const publicKeyHex = getPublicFromPrivateHex(privateKeyHex, undefined, false);
     const publicKeyHexCompressed = getPublicFromPrivateHex(privateKeyHex, undefined, true);
-    console.log(publicKeyHex);
+
     const namedCurve = "P-256";
     const keys = await importKey("jwk", jwkConv(privateKeyHex, publicKeyHex, namedCurve), { name: "ECDSA", namedCurve }, true, ["sign", "verify"]);
 
