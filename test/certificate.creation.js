@@ -31,6 +31,10 @@ import keymaster, {
   NID_sha256,
 } from "../dist/index.min.mjs";
 
+const getPubKey = (output) => output
+  .match(/(pub\:[\n\s]+)([0-9a-f\:\n\s]+)\n/i)[2].replace(clean, '')
+
+
 const rootPrivateKey = createPBKDF2Key("SomeInput", "SomeSeed", 1);
 const clientPrivateKey = createPBKDF2Key("SomeInput1", "SomeSeed1", 1);
 
@@ -44,7 +48,7 @@ let rootIssuerDN,
   clientPublicKey,
   clientPrivateKeyPEM;
 
-const curve = NID_X9_62_prime256v1;
+const curve = NID_ED25519;//NID_X9_62_prime256v1;
 
 const rootArgs = {
   key: rootPrivateKey,
@@ -123,9 +127,7 @@ describe("public key and address from private key", function () {
     ).toString("utf8");
     assert.deepStrictEqual(
       rootPublicKey,
-      output
-        .slice(output.indexOf("pub:\n") + 4, output.indexOf("ASN1 OID:"))
-        .replace(clean, "")
+      getPubKey(output)
     );
     if (!process.env.DEV) {
       unlinkSync(caCertPath);
@@ -169,9 +171,7 @@ describe("public key and address from private key", function () {
     );
     assert.deepStrictEqual(
       clientPublicKey,
-      output
-        .slice(output.indexOf("pub:\n") + 4, output.indexOf("ASN1 OID:"))
-        .replace(clean, "")
+      getPubKey(output)
     );
     if (!process.env.DEV) {
       unlinkSync(serverCSRPath);
@@ -216,9 +216,7 @@ describe("public key and address from private key", function () {
     ).toString("utf8");
     assert.deepStrictEqual(
       clientPublicKey,
-      output
-        .slice(output.indexOf("pub:\n") + 4, output.indexOf("ASN1 OID:"))
-        .replace(clean, "")
+      getPubKey(output)
     );
     if (!process.env.DEV) {
       unlinkSync(serverCertPath);
@@ -227,19 +225,20 @@ describe("public key and address from private key", function () {
       writeFileSync(serverCertTextPath, output);
 
     }
+    
+    /*
+    let rootbagpassword = "rootbagpassword";
+    let signedClientCertBag = Keymaster.createCertificate({
+      caPEM: rootPrivateKeyPEM,
+      caCertificate: rootCertificate,
+      outformat: NID_certBag,
+      certificateSigningRequest,
+      password: rootbagpassword,
+      friendlyName: "certboBaggins",
+    });
+
+    const bagPathSigned = `./test/data/certBagSigned.p12`;
+    console.log(signedClientCertBag)*/
   });
 
-  /**
-  let rootbagpassword = "rootbagpassword";
-  let signedClientCertBag = Keymaster.createCertificate({
-    caPEM: rootKeyPEM,
-    caCertificate: rootCertificate,
-    outformat: NID_certBag,
-    certificateSigningRequest: certificateRequest,
-    password: rootbagpassword,
-    friendlyName: "certboBaggins",
-  });
-
-  const bagPathSigned = `./test/data/certBagSigned.p12`;
-   */
 });

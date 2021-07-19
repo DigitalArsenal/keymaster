@@ -11,9 +11,9 @@ import keymaster from "../../dist/index.min.mjs";
  * @param {Boolean} [verbose=false]
  */
 
-export const createPBKDF2Key = (password, seed, iterations = 1, verbose) => {
-    console
-  let pK = pbkdf2Sync(password, seed, iterations, 32, "sha256", 0);
+export const createPBKDF2Key = (password, seed, iterations = 1, byteLength = 32, verbose) => {
+  console
+  let pK = pbkdf2Sync(password, seed, iterations, byteLength, "sha256", 0);
   let hexKey = pK.toString("hex");
   let bigKey = BigInt(`0x${hexKey}`);
 
